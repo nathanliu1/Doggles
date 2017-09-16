@@ -1,6 +1,7 @@
 package hackthenorth.app.doggles;
 
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -8,11 +9,17 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
     private static final int TAKE_PICTURE = 1;
@@ -20,10 +27,14 @@ public class MainActivity extends AppCompatActivity {
     private String mCurrentPhotoPath;
     private Uri mPhotoURI;
 
+    @BindView(R.id.dog_image)
+    ImageView mainphoto;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         File photoFile = null;
@@ -60,10 +71,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == TAKE_PICTURE) {
             if (resultCode == RESULT_OK) {
-//                Picasso.with(getApplicationContext()).load(mPhotoURI).fit().centerCrop().into(mCreateFlareImage);
-//                this.newFlare.imageDataUploadUri = mPhotoURI;
-            } else {
-                finish();
+                mainphoto.setImageResource(R.drawable.loading_image);
+
+                // Get the background, which has been compiled to an AnimationDrawable object.
+                AnimationDrawable frameAnimation = (AnimationDrawable) mainphoto.getDrawable();
+
+                // Start the animation (looped playback by default).
+                frameAnimation.start();
             }
         }
     }
