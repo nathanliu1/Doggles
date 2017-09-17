@@ -29,6 +29,10 @@
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait"/>
 
+        <activity android:name=".DogInfoActivity"
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"/>
+
         <activity
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme">

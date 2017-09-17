@@ -13,10 +13,10 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-
-import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyImagesOptions;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassification;
+//
+//import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
+//import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyImagesOptions;
+//import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassification;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,24 +56,24 @@ public class MainActivity extends AppCompatActivity {
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoURI);
             startActivityForResult(takePictureIntent, TAKE_PICTURE);
         }
-        new ImageRecognitionService().execute();
+//        new ImageRecognitionService().execute();
     }
 
     // TODO: Move this elsewhere + add real image file.
-    private class ImageRecognitionService extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
-            service.setApiKey("f3225891c60c0abe5a2424102fdf772d1d9955d4");
-            ClassifyImagesOptions options = new ClassifyImagesOptions.Builder()
-                    .images(new File("IMAGE FILE"))
-                    .build();
-            VisualClassification result = service.classify(options).execute();
-            System.out.println(result);
-            return null;
-        }
-    }
+//    private class ImageRecognitionService extends AsyncTask<Void, Void, Void> {
+//
+//        @Override
+//        protected Void doInBackground(Void... params) {
+////            VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
+////            service.setApiKey("f3225891c60c0abe5a2424102fdf772d1d9955d4");
+////            ClassifyImagesOptions options = new ClassifyImagesOptions.Builder()
+////                    .images(new File("IMAGE FILE"))
+////                    .build();
+////            VisualClassification result = service.classify(options).execute();
+////            System.out.println(result);
+////            return null;
+//        }
+//    }
 
     public File createImageFile() throws IOException {
         // Create an image file name
@@ -100,7 +100,17 @@ public class MainActivity extends AppCompatActivity {
 
                 // Start the animation (looped playback by default).
                 frameAnimation.start();
+
+                transitionToNext();
             }
         }
+    }
+
+
+    private void transitionToNext() {
+        Intent intent = new Intent(this, DogInfoActivity.class);
+        intent.putExtra("imageUri", mPhotoURI);
+        startActivity(intent);
+        finish();
     }
 }
