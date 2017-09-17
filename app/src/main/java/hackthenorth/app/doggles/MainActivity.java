@@ -12,11 +12,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyImagesOptions;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassification;
 import com.squareup.picasso.Picasso;
 //
 //import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
 //import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyImagesOptions;
 //import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassification;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,24 +63,24 @@ public class MainActivity extends AppCompatActivity {
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoURI);
             startActivityForResult(takePictureIntent, TAKE_PICTURE);
         }
-//        new ImageRecognitionService().execute();
     }
 
     // TODO: Move this elsewhere + add real image file.
-//    private class ImageRecognitionService extends AsyncTask<Void, Void, Void> {
-//
-//        @Override
-//        protected Void doInBackground(Void... params) {
-////            VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
-////            service.setApiKey("f3225891c60c0abe5a2424102fdf772d1d9955d4");
-////            ClassifyImagesOptions options = new ClassifyImagesOptions.Builder()
-////                    .images(new File("IMAGE FILE"))
-////                    .build();
-////            VisualClassification result = service.classify(options).execute();
-////            System.out.println(result);
-////            return null;
-//        }
-//    }
+    private class ImageRecognitionService extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
+            service.setApiKey("f3225891c60c0abe5a2424102fdf772d1d9955d4");
+            ClassifyImagesOptions options = new ClassifyImagesOptions.Builder()
+                    .images(new File(mCurrentPhotoPath))
+                    .build();
+            VisualClassification result = service.classify(options).execute();
+            parseResponse(result.toString());
+            //System.out.println(result.toString());
+            return null;
+        }
+    }
 
     public File createImageFile() throws IOException {
         // Create an image file name
@@ -102,8 +109,33 @@ public class MainActivity extends AppCompatActivity {
                 frameAnimation.start();
 
                 transitionToNext();
+                new ImageRecognitionService().execute();
             }
         }
+    }
+
+    public void parseResponse(String response) {
+        try {
+            JSONObject resultJson = new JSONObject(response);
+            JSONArray images = resultJson.getJSONArray("images");
+            for (int k = 0; k < images.length(); k++) {
+                JSONObject image = images.getJSONObject(k);
+                JSONArray classifiers = image.getJSONArray("classifiers");
+                for (int i = 0; i < classifiers.length(); i++) {
+                    JSONObject classifiersJSONObject = classifiers.getJSONObject(i);
+                    JSONArray classes = classifiersJSONObject.getJSONArray("classes");
+                    for (int j = 0; j < classes.length(); j++) {
+                        JSONObject classObject = classes.getJSONObject(j);
+                        if (classObject.getString("class").contains("dog")) {
+                            Log.d("RESULT: ", classObject.getString("class"));
+                        }
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
 
